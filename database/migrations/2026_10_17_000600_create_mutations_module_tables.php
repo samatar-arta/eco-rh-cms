@@ -1,0 +1,70 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('types_mutations', function (Blueprint $table) {
+            $table->id();
+            $table->string('code', 50)->unique();
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
+
+        Schema::create('model_mutations', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('type_mutation_id')->constrained('types_mutations')->restrictOnDelete();
+            $table->string('titre');
+            $table->longText('contenu');
+            $table->unsignedInteger('version')->default(1);
+            $table->boolean('is_default')->default(false);
+            $table->boolean('is_active')->default(true);
+            $table->foreignId('cree_par')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamps();
+        });
+
+        // Les anciennes et nouvelles affectations sont conservées sur la ligne ;
+        // la situation de l'employé n'est modifiée qu'après validation définitive.
+        Schema::create('mutations', function (Blueprint $table) {
+            $table->id();
+            $table->string('matricule', 30);
+            $table->foreignId('type_mutation_id')->constrained('types_mutations')->restrictOnDelete();
+            $table->foreignId('model_mutation_id')->nullable()->constrained('model_mutations')->restrictOnDelete();
+            $table->foreignId('ancien_site_id')->nullable()->constrained('sites_affectation')->restrictOnDelete();
+            $table->foreignId('nouveau_site_id')->nullable()->constrained('sites_affectation')->restrictOnDelete();
+            $table->unsignedBigInteger('ancien_departement_id')->nullable();
+            $table->unsignedBigInteger('nouveau_departement_id')->nullable();
+            $table->foreignId('ancienne_societe_id')->nullable()->constrained('societes')->restrictOnDelete();
+            $table->foreignId('nouvelle_societe_id')->nullable()->constrained('societes')->restrictOnDelete();
+            $table->string('ancienne_fonction')->nullable();
+            $table->string('nouvelle_fonction')->nullable();
+            $table->date('date_effet');
+            $table->text('motif')->nullable();
+            $table->foreignId('cree_par')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('reference', 60)->nullable()->unique();
+            $table->string('fichier_path')->nullable();
+            $table->timestamps();
+
+            $table->foreign('matricule')->references('matricule')->on('employes')
+                ->restrictOnDelete()->cascadeOnUpdate();
+            $table->foreign(['ancien_departement_id', 'ancienne_societe_id'])
+                ->references(['id', 'societe_id'])->on('departements')->restrictOnDelete();
+            $table->foreign(['nouveau_departement_id', 'nouvelle_societe_id'])
+                ->references(['id', 'societe_id'])->on('departements')->restrictOnDelete();
+            $table->index(['matricule', 'date_effet']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('mutations');
+        Schema::dropIfExists('model_mutations');
+        Schema::dropIfExists('types_mutations');
+    }
+};
