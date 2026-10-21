@@ -1,3 +1,60 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Accent : triplets RGB, utilisés par les classes `accent-*` (tailwind.config.js). */
+:root,
+[data-accent='indigo'] {
+    --accent-50: 238 242 255;
+    --accent-100: 224 231 255;
+    --accent-200: 199 210 254;
+    --accent-400: 129 140 248;
+    --accent-500: 99 102 241;
+    --accent-600: 79 70 229;
+    --accent-700: 67 56 202;
+}
+
+[data-accent='emerald'] {
+    --accent-50: 236 253 245;
+    --accent-100: 209 250 229;
+    --accent-200: 167 243 208;
+    --accent-400: 52 211 153;
+    --accent-500: 16 185 129;
+    --accent-600: 5 150 105;
+    --accent-700: 4 120 87;
+}
+
+[data-accent='rose'] {
+    --accent-50: 255 241 242;
+    --accent-100: 255 228 230;
+    --accent-200: 254 205 211;
+    --accent-400: 251 113 133;
+    --accent-500: 244 63 94;
+    --accent-600: 225 29 72;
+    --accent-700: 190 18 60;
+}
+
+[data-accent='amber'] {
+    --accent-50: 255 251 235;
+    --accent-100: 254 243 199;
+    --accent-200: 253 230 138;
+    --accent-400: 251 191 36;
+    --accent-500: 245 158 11;
+    --accent-600: 217 119 6;
+    --accent-700: 180 83 9;
+}
+
+/* Densité du tableau : confortable par défaut, compacte via data-density sur <html>. */
+@layer components {
+    .cell {
+        @apply px-5 py-3.5;
+    }
+
+    [data-density='compact'] .cell {
+        @apply px-4 py-1.5;
+    }
+
+    [data-density='compact'] .avatar {
+        @apply h-7 w-7 text-[10px];
+    }
+}

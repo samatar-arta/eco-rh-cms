@@ -60,7 +60,7 @@ class EmployeListingTest extends TestCase
 
         $page1 = $this->actingAs($this->userWithRole(Role::Admin))->get('/employes');
         $page1->assertOk()->assertSee('Employe 01')->assertSee('Employe 20')->assertDontSee('Employe 21');
-        $page1->assertSee('bg-green-100', false)->assertSee('bg-slate-100', false);
+        $page1->assertSee('bg-emerald-50', false)->assertSee('bg-slate-100', false);
         $page1->assertSee('page=2', false);
 
         $this->actingAs($this->userWithRole(Role::Admin))->get('/employes?page=2')

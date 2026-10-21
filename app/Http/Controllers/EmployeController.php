@@ -37,7 +37,13 @@ class EmployeController extends Controller
             ->paginate(self::PAR_PAGE)
             ->withQueryString();
 
+        // Effectifs du périmètre de l'utilisateur, indépendants de la recherche.
+        $effectifs = Employe::query()->visibleTo($request->user())
+            ->selectRaw('statut_employe, count(*) as total')->groupBy('statut_employe')
+            ->pluck('total', 'statut_employe');
+
         return view('employes.index', [
+            'effectifs' => $effectifs,
             'employes' => $employes,
             'q' => $q,
             'statut' => $data['statut'] ?? '',
