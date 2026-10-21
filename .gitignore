@@ -24,4 +24,5 @@ Homestead.yaml
 Thumbs.db
 /storage/framework/lsp-*.php
 
-/employes.sql
+/bds.csv
+/database/data/employes.csv
