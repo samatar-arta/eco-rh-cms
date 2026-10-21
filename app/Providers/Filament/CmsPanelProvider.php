@@ -30,10 +30,13 @@ class CmsPanelProvider extends PanelProvider
             ->id('cms')
             ->path('cms')
             ->login()
+            ->brandName('ECOSYSTEME RH DLS')
+            ->sidebarCollapsibleOnDesktop()
+            ->renderHook(PanelsRenderHook::HEAD_END, fn () => view('filament.panel-style'))
             ->renderHook(PanelsRenderHook::HEAD_END, fn () => view('filament.login-style'), scopes: Login::class)
             ->databaseNotifications()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Blue,
             ])
             ->discoverResources(in: app_path('Filament/Cms/Resources'), for: 'App\Filament\Cms\Resources')
             ->discoverPages(in: app_path('Filament/Cms/Pages'), for: 'App\Filament\Cms\Pages')

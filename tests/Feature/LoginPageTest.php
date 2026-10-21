@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Enums\Role;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,5 +21,18 @@ class LoginPageTest extends TestCase
         }
 
         $this->assertFileExists(public_path('images/bg-login.jpg'));
+    }
+
+    public function test_panel_theme_is_loaded_on_both_panels_after_login(): void
+    {
+        foreach (['rh' => '/rh', 'cms' => '/cms'] as $url) {
+            $admin = User::factory()->create();
+            $admin->forceFill(['is_active' => true])->save();
+            $admin->assignRole(Role::Admin);
+
+            $this->actingAs($admin)->get($url)->assertOk()
+                ->assertSee('rh-panel-style', false)
+                ->assertSee('ECOSYSTEME RH DLS');
+        }
     }
 }

@@ -30,10 +30,13 @@ class RhPanelProvider extends PanelProvider
             ->id('rh')
             ->path('rh')
             ->login()
+            ->brandName('ECOSYSTEME RH DLS')
+            ->sidebarCollapsibleOnDesktop()
+            ->renderHook(PanelsRenderHook::HEAD_END, fn () => view('filament.panel-style'))
             ->renderHook(PanelsRenderHook::HEAD_END, fn () => view('filament.login-style'), scopes: Login::class)
             ->databaseNotifications()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Blue,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
