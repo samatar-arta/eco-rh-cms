@@ -9,7 +9,7 @@ class UserPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->is_active && $user->hasRole(Role::Admin);
+        return $user->is_active && $user->hasRole(Role::Admin) && $user->checkPermissionTo('ViewAny:User');
     }
 
     public function view(User $user, User $target): bool
@@ -19,12 +19,12 @@ class UserPolicy
 
     public function create(User $user): bool
     {
-        return $this->viewAny($user);
+        return $this->viewAny($user) && $user->checkPermissionTo('Create:User');
     }
 
     public function update(User $user, User $target): bool
     {
-        return $this->viewAny($user);
+        return $this->viewAny($user) && $user->checkPermissionTo('Update:User');
     }
 
     /** Un administrateur ne peut pas modifier ses propres rôles ni périmètres. */

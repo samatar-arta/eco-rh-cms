@@ -63,7 +63,7 @@ class FoundationTest extends TestCase
         $user = User::create(['name' => 'X', 'email' => 'x@example.com', 'password' => 'secret-pass-123', 'is_active' => false]);
 
         $this->assertTrue($user->fresh()->is_active);
-        $this->assertSame([], $user->roles());
+        $this->assertSame([], $user->rolesEnum());
     }
 
     public function test_employee_visibility_is_limited_to_user_perimeter(): void

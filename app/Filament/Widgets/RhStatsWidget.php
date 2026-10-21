@@ -14,7 +14,7 @@ class RhStatsWidget extends StatsOverviewWidget
 
     public static function canView(): bool
     {
-        return auth()->user()?->is_active === true && auth()->user()->roles() !== [];
+        return auth()->user()?->is_active === true && auth()->user()->rolesEnum() !== [];
     }
 
     /** @return array<Stat> */

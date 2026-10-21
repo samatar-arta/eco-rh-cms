@@ -325,7 +325,7 @@ class FilamentModulesTest extends TestCase
         $service->modifier($admin, $admin, ['roles' => ['ADMIN', 'RH_MANAGER'], 'perimetres' => [$this->perimetre->id], 'is_active' => false]);
 
         $admin = $admin->fresh();
-        $this->assertSame([Role::Admin], $admin->roles());
+        $this->assertSame([Role::Admin], $admin->rolesEnum());
         $this->assertSame(0, $admin->siteDepartements()->count());
         $this->assertTrue($admin->is_active);
     }
@@ -345,7 +345,7 @@ class FilamentModulesTest extends TestCase
         $admin->assignRole(Role::Admin);
         $user = $service->creer($admin->fresh(), $payload + ['roles' => ['RH_JUNIOR'], 'perimetres' => [$this->perimetre->id]]);
 
-        $this->assertSame([Role::RhJunior], $user->fresh()->roles());
+        $this->assertSame([Role::RhJunior], $user->fresh()->rolesEnum());
         $this->assertSame(1, $user->siteDepartements()->count());
         $this->assertTrue($user->is_active);
     }

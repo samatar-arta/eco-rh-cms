@@ -13,7 +13,7 @@ class EditUser extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        $data['roles'] = array_map(fn ($r) => $r->value, $this->record->roles());
+        $data['roles'] = array_map(fn ($r) => $r->value, $this->record->rolesEnum());
         $data['perimetres'] = $this->record->siteDepartements()->pluck('site_departements.id')->all();
         unset($data['password']);
 

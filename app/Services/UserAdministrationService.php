@@ -57,7 +57,7 @@ class UserAdministrationService
                 && (array_key_exists('roles', $data) || array_key_exists('perimetres', $data))) {
                 $this->synchroniser(
                     $cible,
-                    $data['roles'] ?? array_map(fn (Role $r) => $r->value, $cible->roles()),
+                    $data['roles'] ?? array_map(fn (Role $r) => $r->value, $cible->rolesEnum()),
                     $data['perimetres'] ?? $cible->siteDepartements()->pluck('site_departements.id')->all(),
                 );
                 app(AuditService::class)->enregistrer($acteur, 'user.permissions', 'Rôles et périmètres modifiés', $cible);
@@ -79,6 +79,7 @@ class UserAdministrationService
             $user->assignRole($role);
         }
         $user->unsetRelation('roleAssignments');
+        $user->miroirRoles();
 
         $user->siteDepartements()->sync($perimetres);
     }

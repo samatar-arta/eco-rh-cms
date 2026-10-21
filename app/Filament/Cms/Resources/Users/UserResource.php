@@ -70,7 +70,7 @@ class UserResource extends Resource
                 TextColumn::make('name')->label('Nom')->searchable(),
                 TextColumn::make('email')->label('E-mail')->searchable(),
                 TextColumn::make('roles')->label('Rôles')->badge()
-                    ->state(fn (User $record) => array_map(fn (Role $r) => $r->label(), $record->roles())),
+                    ->state(fn (User $record) => array_map(fn (Role $r) => $r->label(), $record->rolesEnum())),
                 IconColumn::make('is_active')->label('Actif')->boolean(),
             ])
             ->recordActions([EditAction::make()]);

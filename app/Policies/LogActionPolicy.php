@@ -11,7 +11,7 @@ class LogActionPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->is_active && $user->hasRole(Role::Admin);
+        return $user->is_active && $user->hasRole(Role::Admin) && $user->checkPermissionTo('ViewAny:LogAction');
     }
 
     public function view(User $user, LogAction $log): bool

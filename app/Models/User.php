@@ -11,11 +11,18 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Models\Role as SpatieRole;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
+    use HasRoles {
+        hasRole as protected spatieHasRole;
+        assignRole as protected spatieAssignRole;
+    }
 
     /**
      * Ni `is_active` ni les rôles ne sont assignables en masse : seuls les
@@ -55,18 +62,27 @@ class User extends Authenticatable implements FilamentUser
         return $this->belongsToMany(SiteDepartement::class, 'site_departement_user')->withTimestamps();
     }
 
-    /** @return list<Role> */
-    public function roles(): array
+    /**
+     * `role_user` reste la source de vérité des rôles métier ; les tables Spatie
+     * (utilisées par Filament Shield pour les permissions) en sont le miroir.
+     *
+     * @return list<Role>
+     */
+    public function rolesEnum(): array
     {
         return $this->roleAssignments->pluck('role')->all();
     }
 
-    public function hasRole(Role $role): bool
+    public function hasRole($roles, ?string $guard = null): bool
     {
-        return in_array($role, $this->roles(), true);
+        if ($roles instanceof Role) {
+            return in_array($roles, $this->rolesEnum(), true);
+        }
+
+        return $this->spatieHasRole($roles, $guard);
     }
 
-    public function hasAnyRole(Role ...$roles): bool
+    public function hasAnyRole(...$roles): bool
     {
         foreach ($roles as $role) {
             if ($this->hasRole($role)) {
@@ -77,10 +93,32 @@ class User extends Authenticatable implements FilamentUser
         return false;
     }
 
-    public function assignRole(Role $role): void
+    public function assignRole(...$roles): static
     {
-        $this->roleAssignments()->firstOrCreate(['role' => $role->value]);
+        foreach ($roles as $role) {
+            if ($role instanceof Role) {
+                $this->roleAssignments()->firstOrCreate(['role' => $role->value]);
+            } else {
+                $this->spatieAssignRole($role);
+            }
+        }
         $this->unsetRelation('roleAssignments');
+        $this->miroirRoles();
+
+        return $this;
+    }
+
+    /** Aligne les rôles Spatie correspondant à l'enum sur `role_user` (les autres rôles Shield sont conservés). */
+    public function miroirRoles(): void
+    {
+        $actuels = $this->rolesEnum();
+        foreach (Role::cases() as $role) {
+            if (in_array($role, $actuels, true)) {
+                $this->spatieAssignRole(SpatieRole::findOrCreate($role->value, 'web'));
+            } else {
+                $this->removeRole($role->value);
+            }
+        }
     }
 
     public function canAccessPanel(Panel $panel): bool
@@ -90,7 +128,7 @@ class User extends Authenticatable implements FilamentUser
         }
 
         return match ($panel->getId()) {
-            'rh' => $this->roles() !== [],
+            'rh' => $this->rolesEnum() !== [],
             'cms' => $this->hasRole(Role::Admin),
             default => false,
         };
