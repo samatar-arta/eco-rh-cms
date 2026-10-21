@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use Filament\Auth\Pages\Login;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -10,6 +11,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -28,6 +30,7 @@ class RhPanelProvider extends PanelProvider
             ->id('rh')
             ->path('rh')
             ->login()
+            ->renderHook(PanelsRenderHook::HEAD_END, fn () => view('filament.login-style'), scopes: Login::class)
             ->databaseNotifications()
             ->colors([
                 'primary' => Color::Amber,
