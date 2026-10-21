@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DossierFichierController;
+use App\Http\Controllers\EmployeController;
 use App\Http\Controllers\PaylistFichierController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,3 +17,7 @@ Route::get('/fichiers/{module}/{id}/{fichier?}', DossierFichierController::class
     ->whereIn('fichier', ['final', 'justificatif'])
     ->middleware('auth')
     ->name('dossiers.fichier');
+
+Route::get('/employes', [EmployeController::class, 'index'])
+    ->middleware('auth')
+    ->name('employes.index');
