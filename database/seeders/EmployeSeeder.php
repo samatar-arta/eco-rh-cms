@@ -6,13 +6,14 @@ use App\Models\Contrat;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use RuntimeException;
 
 /**
  * Importe database/data/employes.csv (export Excel, Windows-1252 ou UTF-8, séparateur « , »).
- * Lecture ligne par ligne, insertion par blocs. Idempotent (matricule unique : les
- * matricules déjà présents sont ignorés). Le fichier contient des données personnelles
+ * Lecture ligne par ligne, insertion par blocs. Idempotent (la table est vidée avant
+ * chaque import). Le fichier contient des données personnelles
  * et n'est pas versionné.
  *
  * L'âge et l'ancienneté du CSV ne sont pas repris : ils sont calculés depuis
@@ -74,7 +75,8 @@ class EmployeSeeder extends Seeder
             throw new RuntimeException("Fichier introuvable : {$fichier}");
         }
 
-        $existants = array_flip(DB::table('employes')->pluck('matricule')->all());
+        $this->vider();
+        $existants = [];
         $handle = fopen($fichier, 'r');
         fgetcsv($handle); // en-tête
 
@@ -107,6 +109,27 @@ class EmployeSeeder extends Seeder
 
         $this->command?->info("Lignes lues dans employes.csv : {$lus}");
         $this->command?->info("Lignes insérées : {$inseres} (ignorées : {$ignores})");
+    }
+
+    /** Vide `employes`, sauf si une autre table en dépend (aucun orphelin laissé derrière). */
+    private function vider(): void
+    {
+        $dependants = [];
+        foreach (Schema::getTables() as $table) {
+            foreach (Schema::getForeignKeys($table['name']) as $fk) {
+                if ($fk['foreign_table'] === 'employes' && DB::table($table['name'])->exists()) {
+                    $dependants[] = $table['name'];
+                }
+            }
+        }
+
+        if ($dependants !== []) {
+            throw new RuntimeException('Import annulé, des données dépendent des employés : '.implode(', ', array_unique($dependants)));
+        }
+
+        Schema::disableForeignKeyConstraints();
+        DB::table('employes')->truncate();
+        Schema::enableForeignKeyConstraints();
     }
 
     /** @param list<?string> $row */
