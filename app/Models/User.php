@@ -129,7 +129,6 @@ class User extends Authenticatable implements FilamentUser
 
         return match ($panel->getId()) {
             'rh' => $this->rolesEnum() !== [],
-            'cms' => $this->hasRole(Role::Admin),
             default => false,
         };
     }

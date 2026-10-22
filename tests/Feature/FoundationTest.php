@@ -49,12 +49,10 @@ class FoundationTest extends TestCase
     public function test_panel_access_requires_active_user_with_a_role(): void
     {
         $rh = Filament::getPanel('rh');
-        $cms = Filament::getPanel('cms');
 
         $this->assertFalse(User::factory()->create()->canAccessPanel($rh));
         $this->assertTrue($this->userWithRole(Role::RhJunior)->canAccessPanel($rh));
-        $this->assertFalse($this->userWithRole(Role::RhJunior)->canAccessPanel($cms));
-        $this->assertTrue($this->userWithRole(Role::Admin)->canAccessPanel($cms));
+        $this->assertNull(Filament::getPanel('cms', isStrict: false));
         $this->assertFalse($this->userWithRole(Role::Admin, ['is_active' => false])->canAccessPanel($rh));
     }
 

@@ -1,4 +1,4 @@
-{{-- Page de connexion : fond photo du port, carte centrée, boutons bien visibles. Chargé par les panneaux rh et cms (scope Login). --}}
+{{-- Page de connexion : fond photo du port, carte centrée, boutons bien visibles. Chargé par les panneau rh (scope Login). --}}
 <style>
     .fi-simple-layout {
         background:

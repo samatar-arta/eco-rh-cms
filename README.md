@@ -27,7 +27,7 @@ php artisan app:create-admin "Nom" admin@exemple.dj
 composer dev                         # serveur + file + logs + vite
 ```
 
-Panneaux : `/rh` (équipes RH, paie) et `/cms` (administrateurs).
+Panneau unique : `/rh` (équipes RH, paie et administrateurs).
 
 ## Tests
 

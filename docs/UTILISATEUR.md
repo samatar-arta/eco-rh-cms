@@ -1,6 +1,6 @@
 # Guide utilisateur
 
-Connexion : `/rh` (équipes RH et paie) ou `/cms` (administrateurs). Cinq tentatives de connexion par minute au maximum.
+Connexion : `/rh` (équipes RH et paie) (les administrateurs y trouvent aussi le groupe Administration). Cinq tentatives de connexion par minute au maximum.
 La cloche en haut de l'écran affiche vos notifications (dossier à valider, rejet, approbation, retard…).
 
 ## Rôles
@@ -55,7 +55,7 @@ La signature interne n'est **pas** une signature électronique qualifiée.
 
 Les contacts sont des destinataires externes : aucun compte utilisateur n'est créé pour eux.
 
-## Administration (ADMIN, /cms)
+## Administration (ADMIN, panneau /rh)
 
 Référentiels (sociétés, sites, départements, contrats), types et modèles HTML de chaque module (variables
 autorisées uniquement, par ex. `{{ employe.name }}`, `{{ document.reference }}`), niveaux de sanction,

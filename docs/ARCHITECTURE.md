@@ -22,7 +22,7 @@ Sociétés/Sites/Départements → Utilisateurs/Employés/Contacts
 | Policies (auto-découvertes) | `app/Policies` |
 | Jobs / Events / Listeners | `app/Jobs`, `app/Events`, `app/Listeners` |
 | Panneau RH (équipes, paie) | `app/Filament/Resources`, `Widgets`, `Support` |
-| Panneau CMS (ADMIN) | `app/Filament/Cms` |
+| Administration (ADMIN, panneau rh) | `app/Filament/Resources` (référentiels, types, modèles, utilisateurs, audit) |
 | Commandes planifiées | `app/Console/Commands`, `routes/console.php` |
 
 ### Services

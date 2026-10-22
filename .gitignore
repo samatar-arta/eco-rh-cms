@@ -26,3 +26,8 @@ Thumbs.db
 
 /bds.csv
 /database/data/employes.csv
+
+/public/css/filament/
+/public/js/filament/
+/public/fonts/filament/
+/public/build/

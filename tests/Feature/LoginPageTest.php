@@ -13,7 +13,7 @@ class LoginPageTest extends TestCase
 
     public function test_login_pages_use_the_port_background_and_centered_card(): void
     {
-        foreach (['/rh/login', '/cms/login'] as $url) {
+        foreach (['/rh/login'] as $url) {
             $this->get($url)->assertOk()
                 ->assertSee('images/bg-login.jpg', false)
                 ->assertSee('.fi-simple-main', false)
@@ -25,7 +25,7 @@ class LoginPageTest extends TestCase
 
     public function test_panel_theme_is_loaded_on_both_panels_after_login(): void
     {
-        foreach (['rh' => '/rh', 'cms' => '/cms'] as $url) {
+        foreach (['rh' => '/rh'] as $url) {
             $admin = User::factory()->create();
             $admin->forceFill(['is_active' => true])->save();
             $admin->assignRole(Role::Admin);
@@ -34,5 +34,11 @@ class LoginPageTest extends TestCase
                 ->assertSee('rh-panel-style', false)
                 ->assertSee('ECOSYSTEME RH DLS');
         }
+    }
+
+    public function test_cms_panel_no_longer_exists(): void
+    {
+        $this->get('/cms')->assertNotFound();
+        $this->get('/cms/login')->assertNotFound();
     }
 }

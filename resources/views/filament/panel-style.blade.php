@@ -1,4 +1,4 @@
-{{-- Habillage commun des panneaux rh et cms : cartes arrondies, ombres douces, navigation lisible. Sans build : variables Filament (--primary-*, --gray-*). --}}
+{{-- Habillage commun des panneau rh : cartes arrondies, ombres douces, navigation lisible. Sans build : variables Filament (--primary-*, --gray-*). --}}
 <style id="rh-panel-style">
     :root {
         --rh-radius: 1rem;

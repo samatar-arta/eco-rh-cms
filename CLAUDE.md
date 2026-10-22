@@ -14,7 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Architecture (état après Phase 10 : validation finale)
 
 - Laravel 12, Filament 5, Livewire 4, PHP ^8.2. Auth = Filament uniquement (Breeze supprimé, `/` redirige vers `/rh`, pas de `/register`). Premier admin : `php artisan app:create-admin {name} {email}` (mot de passe saisi en interactif).
-- Panneaux : `rh` (`/rh`, défaut) et `cms` (`/cms`, ADMIN seulement). Accès via `User::canAccessPanel()` : utilisateur actif avec au moins un rôle.
+- Panneau unique `rh` (`/rh`) ; le panneau `cms` a été supprimé, ses ressources d'administration (référentiels, types, modèles, utilisateurs, audit) vivent dans `app/Filament/Resources` et restent ADMIN seulement via les policies/Shield. Accès via `User::canAccessPanel()` : utilisateur actif avec au moins un rôle.
 - Rôles : enum `App\Enums\Role`, table `role_user` (multi-rôles, hors `$fillable`). Périmètres : pivot `site_departement_user` ; `Employe::scopeVisibleTo($user)` limite les rôles RH/paie à leurs périmètres ; un ADMIN actif le contourne (accès total aux employés, y compris via `EmployePolicy::before()`).
 - Cohérence société/département garantie par FK composites `(departement_id, societe_id) -> departements(id, societe_id)` (site_departements, employes, contacts, employe_affectations).
 - Policies auto-découvertes dans `app/Policies` (référentiels = `ReferentialPolicy`, écriture ADMIN).

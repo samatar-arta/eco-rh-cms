@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\DistributionCanal;
 use App\Enums\Role;
-use App\Filament\Cms\Resources\LogsActions\Pages\ListLogsActions;
+use App\Filament\Resources\LogsActions\Pages\ListLogsActions;
 use App\Filament\Widgets\ContratsChart;
 use App\Filament\Widgets\EffectifsSocieteChart;
 use App\Filament\Widgets\RhStatsWidget;
@@ -159,12 +159,12 @@ class NotificationsAuditDashboardTest extends TestCase
 
     public function test_audit_log_page_is_reserved_to_admins(): void
     {
-        Filament::setCurrentPanel('cms');
+        Filament::setCurrentPanel('rh');
         $admin = User::factory()->create();
         $admin->assignRole(Role::Admin);
 
         Livewire::actingAs($admin->fresh())->test(ListLogsActions::class)->assertSuccessful();
-        $this->actingAs($this->acteur(Role::RhManager))->get(ListLogsActions::getUrl(panel: 'cms'))->assertForbidden();
+        $this->actingAs($this->acteur(Role::RhManager))->get(ListLogsActions::getUrl(panel: 'rh'))->assertForbidden();
     }
 
     public function test_dashboard_is_limited_to_the_user_scope_and_rights(): void

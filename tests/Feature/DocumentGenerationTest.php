@@ -6,7 +6,7 @@ use App\Enums\RhModule;
 use App\Enums\Role;
 use App\Enums\WorkflowStatut;
 use App\Exceptions\WorkflowException;
-use App\Filament\Cms\Resources\ModelDocuments\Pages\ManageModelDocuments;
+use App\Filament\Resources\ModelDocuments\Pages\ManageModelDocuments;
 use App\Models\Conge;
 use App\Models\ModelDocument;
 use App\Models\ReferenceSequence;
@@ -99,7 +99,7 @@ class DocumentGenerationTest extends TestCase
 
     public function test_template_form_refuses_unknown_variables(): void
     {
-        Filament::setCurrentPanel('cms');
+        Filament::setCurrentPanel('rh');
         $admin = User::factory()->create();
         $admin->assignRole(Role::Admin);
 

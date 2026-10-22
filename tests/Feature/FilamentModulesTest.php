@@ -4,13 +4,13 @@ namespace Tests\Feature;
 
 use App\Enums\Role;
 use App\Enums\WorkflowStatut;
-use App\Filament\Cms\Resources\TypesDocuments\Pages\ManageTypesDocuments;
 use App\Filament\Resources\Conges\Pages\CreateConge;
 use App\Filament\Resources\Documents\Pages\CreateDocument;
 use App\Filament\Resources\Documents\Pages\ListDocuments;
 use App\Filament\Resources\Employes\Pages\CreateEmploye;
 use App\Filament\Resources\Mutations\Pages\CreateMutation;
 use App\Filament\Resources\Sanctions\Pages\ListSanctions;
+use App\Filament\Resources\TypesDocuments\Pages\ManageTypesDocuments;
 use App\Models\Conge;
 use App\Models\Document;
 use App\Models\Employe;
@@ -302,8 +302,8 @@ class FilamentModulesTest extends TestCase
 
     public function test_cms_admin_screens_are_admin_only(): void
     {
-        Filament::setCurrentPanel('cms');
-        $this->actingAs($this->acteur(Role::RhManager))->get('/cms/types-documents')->assertForbidden();
+        Filament::setCurrentPanel('rh');
+        $this->actingAs($this->acteur(Role::RhManager))->get('/rh/types-documents')->assertForbidden();
 
         $admin = User::factory()->create();
         $admin->assignRole(Role::Admin);
