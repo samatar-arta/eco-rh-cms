@@ -20,7 +20,7 @@ class ContactPolicy
 
     public function create(User $user): bool
     {
-        return $user->is_active && $user->hasAnyRole(Role::Admin, Role::GestionnairePaie);
+        return $user->is_active && $user->hasAnyRole(Role::Admin, Role::RhManager, Role::GestionnairePaie);
     }
 
     public function update(User $user, Contact $contact): bool

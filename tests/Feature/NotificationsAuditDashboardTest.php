@@ -122,7 +122,7 @@ class NotificationsAuditDashboardTest extends TestCase
         $this->assertSame($document->id, $log->entite_id);
     }
 
-    public function test_audit_log_is_append_only_and_admin_only(): void
+    public function test_audit_log_is_append_only_and_admin_and_manager_only(): void
     {
         $log = app(AuditService::class)->enregistrer(null, 'test.action', 'x');
         $admin = User::factory()->create();
@@ -139,7 +139,8 @@ class NotificationsAuditDashboardTest extends TestCase
             $log->delete();
         } finally {
             $this->assertTrue($admin->fresh()->can('viewAny', LogAction::class));
-            $this->assertFalse($this->acteur(Role::RhManager)->can('viewAny', LogAction::class));
+            $this->assertTrue($this->acteur(Role::RhManager)->can('viewAny', LogAction::class));
+            $this->assertFalse($this->acteur(Role::RhSenior)->can('viewAny', LogAction::class));
             $this->assertFalse($admin->fresh()->can('delete', $log));
         }
     }
@@ -157,20 +158,21 @@ class NotificationsAuditDashboardTest extends TestCase
         $this->assertSame(0, LogAction::where('description', 'like', '%S3cret%')->count());
     }
 
-    public function test_audit_log_page_is_reserved_to_admins(): void
+    public function test_audit_log_page_is_reserved_to_admins_and_managers(): void
     {
         Filament::setCurrentPanel('rh');
         $admin = User::factory()->create();
         $admin->assignRole(Role::Admin);
 
         Livewire::actingAs($admin->fresh())->test(ListLogsActions::class)->assertSuccessful();
-        $this->actingAs($this->acteur(Role::RhManager))->get(ListLogsActions::getUrl(panel: 'rh'))->assertForbidden();
+        $this->actingAs($this->acteur(Role::RhManager))->get(ListLogsActions::getUrl(panel: 'rh'))->assertOk();
+        $this->actingAs($this->acteur(Role::RhSenior))->get(ListLogsActions::getUrl(panel: 'rh'))->assertForbidden();
     }
 
     public function test_dashboard_is_limited_to_the_user_scope_and_rights(): void
     {
         $dansLePerimetre = $this->acteur(Role::RhManager);
-        $horsPerimetre = $this->acteur(Role::RhManager, false);
+        $horsPerimetre = $this->acteur(Role::RhSenior, false);
         $junior = $this->acteur(Role::RhJunior);
         $this->document();
         $createur = $this->acteur(Role::RhSenior);

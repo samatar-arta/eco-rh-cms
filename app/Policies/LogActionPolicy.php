@@ -2,16 +2,15 @@
 
 namespace App\Policies;
 
-use App\Enums\Role;
 use App\Models\LogAction;
 use App\Models\User;
 
-/** Journal d'audit : consultation réservée aux ADMIN actifs, jamais modifiable. */
+/** Journal d'audit : consultation réservée aux ADMIN et RH_MANAGER actifs, jamais modifiable. */
 class LogActionPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->is_active && $user->hasRole(Role::Admin) && $user->checkPermissionTo('ViewAny:LogAction');
+        return $user->estAdministrateur() && $user->checkPermissionTo('ViewAny:LogAction');
     }
 
     public function view(User $user, LogAction $log): bool

@@ -22,7 +22,7 @@ Sociétés/Sites/Départements → Utilisateurs/Employés/Contacts
 | Policies (auto-découvertes) | `app/Policies` |
 | Jobs / Events / Listeners | `app/Jobs`, `app/Events`, `app/Listeners` |
 | Panneau RH (équipes, paie) | `app/Filament/Resources`, `Widgets`, `Support` |
-| Administration (ADMIN, panneau rh) | `app/Filament/Resources` (référentiels, types, modèles, utilisateurs, audit) |
+| Administration (ADMIN et RH_MANAGER, panneau rh) | `app/Filament/Resources` (référentiels, types, modèles, utilisateurs, audit) |
 | Commandes planifiées | `app/Console/Commands`, `routes/console.php` |
 
 ### Services
@@ -47,7 +47,7 @@ Sociétés/Sites/Départements → Utilisateurs/Employés/Contacts
 ## Sécurité
 
 - Authentification Filament (login limité à 5 essais/min). Pas d'inscription publique.
-- Autorisations dans Policies **et** services ; masquer un bouton ne suffit jamais. `ADMIN` n'accède ni aux dossiers RH ni aux bulletins.
+- Autorisations dans Policies **et** services ; masquer un bouton ne suffit jamais. `ADMIN` n'accède ni aux dossiers RH ni aux bulletins ; `RH_MANAGER` a les droits d'administration d'ADMIN et conserve ses droits sur les dossiers RH (jamais sur les bulletins).
 - Périmètres : `Employe::scopeVisibleTo()` appliqué à toutes les requêtes (listes, statistiques, destinataires de notifications).
 - Fichiers : disque privé (`storage/app/private`), téléchargement par routes authentifiées + policy, audités.
 - Import Paylist : seul le nom de base d'une entrée ZIP est utilisé, signature `%PDF-` contrôlée, limites de taille/nombre.
@@ -58,7 +58,7 @@ Sociétés/Sites/Départements → Utilisateurs/Employés/Contacts
 
 1. Format d'export Sage : ZIP de PDF `MATRICULE[_suite].pdf` (ou PDF unique). Adapter `PaylistImportService` si CSV/XLSX.
 2. Les salaires de promotion restent sur la promotion, non reportés sur la fiche employé ; le « grade » est un champ texte `employes.grade`.
-3. Les ADMIN n'ont pas accès aux bulletins ni aux dossiers RH (principe de moindre privilège).
+3. Aucun ADMIN ni RH_MANAGER n'a accès aux bulletins ; l'ADMIN seul n'a pas accès aux dossiers RH.
 4. Les congés disposent d'une référence interne `CG_DARH/DLS` (modifiable en base).
 5. Le statut `EXPIRE` n'est pas appliqué automatiquement : les retards sont signalés et relancés.
 6. « Envoyé » = remis au serveur de messagerie.

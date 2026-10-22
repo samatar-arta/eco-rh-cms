@@ -80,7 +80,7 @@ class Workflow extends Model
             return $query->whereRaw('1 = 0');
         }
 
-        if ($user->hasRole(Role::Admin)) {
+        if ($user->estAdministrateur()) {
             return $query;
         }
 

@@ -2,14 +2,13 @@
 
 namespace App\Policies;
 
-use App\Enums\Role;
 use App\Models\User;
 
 class UserPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->is_active && $user->hasRole(Role::Admin) && $user->checkPermissionTo('ViewAny:User');
+        return $user->estAdministrateur() && $user->checkPermissionTo('ViewAny:User');
     }
 
     public function view(User $user, User $target): bool

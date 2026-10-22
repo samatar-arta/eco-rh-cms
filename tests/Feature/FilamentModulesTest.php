@@ -303,7 +303,8 @@ class FilamentModulesTest extends TestCase
     public function test_cms_admin_screens_are_admin_only(): void
     {
         Filament::setCurrentPanel('rh');
-        $this->actingAs($this->acteur(Role::RhManager))->get('/rh/types-documents')->assertForbidden();
+        $this->actingAs($this->acteur(Role::RhSenior))->get('/rh/types-documents')->assertForbidden();
+        $this->actingAs($this->acteur(Role::RhManager))->get('/rh/types-documents')->assertOk();
 
         $admin = User::factory()->create();
         $admin->assignRole(Role::Admin);
@@ -330,14 +331,14 @@ class FilamentModulesTest extends TestCase
         $this->assertTrue($admin->is_active);
     }
 
-    public function test_only_admin_can_create_users_and_assign_roles(): void
+    public function test_only_admin_and_manager_can_create_users_and_assign_roles(): void
     {
         $service = app(UserAdministrationService::class);
         $payload = ['name' => 'Nouveau', 'email' => 'nouveau@example.com', 'password' => 'un-mot-de-passe-long'];
 
         try {
-            $service->creer($this->acteur(Role::RhManager), $payload);
-            $this->fail('Seul un ADMIN crée des utilisateurs.');
+            $service->creer($this->acteur(Role::RhSenior), $payload);
+            $this->fail('Seuls ADMIN et RH_MANAGER créent des utilisateurs.');
         } catch (AuthorizationException) {
         }
 

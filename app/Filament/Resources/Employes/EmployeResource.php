@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Employes;
 
-use App\Enums\Role;
 use App\Enums\StatutEmploye;
 use App\Filament\Resources\Employes\Pages\CreateEmploye;
 use App\Filament\Resources\Employes\Pages\EditEmploye;
@@ -120,7 +119,7 @@ class EmployeResource extends Resource
             }
 
             $user = auth()->user();
-            if (! $user->hasRole(Role::Admin) && ! $user->siteDepartements()->whereKey($existe->getKey())->exists()) {
+            if (! $user->estAdministrateur() && ! $user->siteDepartements()->whereKey($existe->getKey())->exists()) {
                 $fail('Cette affectation est hors de votre périmètre.');
             }
         };

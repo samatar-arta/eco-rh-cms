@@ -72,12 +72,14 @@ class WorkflowSupervisionTest extends TestCase
         $de = fn (Workflow ...$ws) => collect($ws)->pluck('id')->sort()->values()->all();
 
         $this->assertSame($de($enValidation, $approuve, $dOfficer, $dJunior, $ailleurs), $ids($this->acteur(Role::Admin, false)));
-        $this->assertSame($de($enValidation, $approuve, $dOfficer, $dJunior), $ids($this->acteur(Role::RhManager)));
+        $this->assertSame($de($enValidation, $approuve, $dOfficer, $dJunior, $ailleurs), $ids($this->acteur(Role::RhManager)));
         $this->assertSame($de($enValidation), $ids($this->acteur(Role::RhSenior)));
         $this->assertSame($de($dOfficer), $ids($officer));
         $this->assertSame($de($dJunior), $ids($junior));
         $this->assertSame([], $ids($this->acteur(Role::GestionnairePaie)));
-        $this->assertSame([], $ids($this->acteur(Role::RhManager, false)));
+        // RH_MANAGER = ADMIN : tous les périmètres, même sans affectation.
+        $this->assertSame($de($enValidation, $approuve, $dOfficer, $dJunior, $ailleurs), $ids($this->acteur(Role::RhManager, false)));
+        $this->assertSame([], $ids($this->acteur(Role::RhSenior, false)));
     }
 
     public function test_workflow_screen_is_open_to_rh_roles_but_not_to_payroll(): void
@@ -88,7 +90,7 @@ class WorkflowSupervisionTest extends TestCase
         $this->actingAs($this->acteur(Role::GestionnairePaie))->get('/rh/workflows')->assertForbidden();
     }
 
-    public function test_table_is_scoped_filterable_and_read_only(): void
+    public function test_table_shows_every_perimeter_to_the_manager_is_filterable_and_read_only(): void
     {
         $manager = $this->acteur(Role::RhManager);
         $visible = $this->workflowDe('REJETE', null);
@@ -96,13 +98,14 @@ class WorkflowSupervisionTest extends TestCase
 
         Livewire::actingAs($manager)->test(ListWorkflows::class)
             ->assertCanSeeTableRecords([$visible])
-            ->assertCanNotSeeTableRecords([$cache])
+            ->assertCanSeeTableRecords([$cache])
             ->filterTable('statut', 'APPROUVE')->assertCanNotSeeTableRecords([$visible])
             ->resetTableFilters()
             ->filterTable('workflowable_type', 'document')->assertCanSeeTableRecords([$visible]);
 
         $this->assertTrue($manager->can('view', $visible));
-        $this->assertFalse($manager->can('view', $cache));
+        $this->assertTrue($manager->can('view', $cache));
+        $this->assertFalse($this->acteur(Role::RhSenior)->can('view', $cache));
         $this->assertFalse($manager->can('update', $visible));
         $this->assertFalse($manager->can('delete', $visible));
     }
@@ -117,11 +120,12 @@ class WorkflowSupervisionTest extends TestCase
         Workflow::create(['workflowable_type' => 'document', 'workflowable_id' => $w->workflowable_id]);
     }
 
-    public function test_only_admin_sees_the_history_and_it_is_immutable(): void
+    public function test_only_admin_and_manager_see_the_history_and_it_is_immutable(): void
     {
-        foreach ([Role::RhManager, Role::RhSenior, Role::GestionnairePaie] as $role) {
+        foreach ([Role::RhSenior, Role::RhOfficer, Role::RhJunior, Role::GestionnairePaie] as $role) {
             $this->actingAs($this->acteur($role))->get('/rh/workflow-histories')->assertForbidden();
         }
+        $this->actingAs($this->acteur(Role::RhManager))->get('/rh/workflow-histories')->assertOk();
 
         $history = WorkflowHistory::create([
             'workflow_id' => $this->workflowDe('BROUILLON', null)->id,

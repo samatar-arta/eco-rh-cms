@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Enums\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,17 +23,17 @@ abstract class ReferentialPolicy
 
     public function create(User $user): bool
     {
-        return $user->is_active && $user->hasRole(Role::Admin) && $this->permis($user, 'Create');
+        return $user->estAdministrateur() && $this->permis($user, 'Create');
     }
 
     public function update(User $user, Model $model): bool
     {
-        return $user->is_active && $user->hasRole(Role::Admin) && $this->permis($user, 'Update');
+        return $user->estAdministrateur() && $this->permis($user, 'Update');
     }
 
     public function delete(User $user, Model $model): bool
     {
-        return $user->is_active && $user->hasRole(Role::Admin) && $this->permis($user, 'Delete');
+        return $user->estAdministrateur() && $this->permis($user, 'Delete');
     }
 
     /** Permission Shield `Action:Modèle`, le modèle étant déduit du nom de la policy. */

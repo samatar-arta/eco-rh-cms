@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\Role;
 use App\Enums\StatutEmploye;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -83,12 +82,12 @@ class Employe extends Model
 
     /**
      * Restreint aux employés des périmètres site-département de l'utilisateur.
-     * Aucun périmètre => aucun résultat. Seul un ADMIN actif contourne ce
+     * Aucun périmètre => aucun résultat. Seuls les ADMIN et RH_MANAGER actifs contournent ce
      * filtre (accès à tous les employés).
      */
     public function scopeVisibleTo(Builder $query, User $user): Builder
     {
-        if ($user->is_active && $user->hasRole(Role::Admin)) {
+        if ($user->estAdministrateur()) {
             return $query;
         }
 

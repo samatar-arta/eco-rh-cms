@@ -9,11 +9,11 @@ La cloche en haut de l'écran affiche vos notifications (dossier à valider, rej
 |---|---|
 | **RH_JUNIOR / RH_OFFICER** | Créer des brouillons (documents, congés, sanctions), corriger les dossiers rejetés, soumettre |
 | **RH_SENIOR** | Valider ou rejeter (commentaire obligatoire au rejet) ; créer évaluations, promotions, mutations |
-| **RH_MANAGER** | Approuver ou rejeter ; créer évaluations, promotions, mutations ; relancer un PDF |
+| **RH_MANAGER** | Approuver ou rejeter ; créer évaluations, promotions, mutations ; relancer un PDF ; **mêmes droits que ADMIN** (administration, historique des workflows, journal d'audit, tous les périmètres) |
 | **GESTIONNAIRE_PAIE** | Importer et distribuer les bulletins (Paylist), gérer les contacts |
-| **ADMIN** | Référentiels, types, modèles, utilisateurs et périmètres, journal d'audit. Pas d'accès aux dossiers RH ni aux bulletins |
+| **ADMIN** | Référentiels, types, modèles, utilisateurs et périmètres, journal d'audit, historique des workflows, tous les périmètres. Pas d'accès aux dossiers RH ni aux bulletins |
 
-Vous ne voyez que les employés de **vos périmètres** (site/département) définis par un administrateur.
+Sauf ADMIN et RH_MANAGER (qui voient tous les périmètres), vous ne voyez que les employés de **vos périmètres** (site/département) définis par un administrateur.
 Vous ne pouvez pas traiter un dossier que vous avez créé (ni, pour l'approbation, que vous avez validé).
 
 ## Cycle d'un dossier
@@ -55,7 +55,7 @@ La signature interne n'est **pas** une signature électronique qualifiée.
 
 Les contacts sont des destinataires externes : aucun compte utilisateur n'est créé pour eux.
 
-## Administration (ADMIN, panneau /rh)
+## Administration (ADMIN et RH_MANAGER, panneau /rh)
 
 Référentiels (sociétés, sites, départements, contrats), types et modèles HTML de chaque module (variables
 autorisées uniquement, par ex. `{{ employe.name }}`, `{{ document.reference }}`), niveaux de sanction,

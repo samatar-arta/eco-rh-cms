@@ -337,7 +337,7 @@ class DocumentGenerationTest extends TestCase
             ->assertOk();
     }
 
-    public function test_only_a_manager_in_perimeter_can_request_a_pdf_retry(): void
+    public function test_only_a_manager_can_request_a_pdf_retry_in_any_perimeter(): void
     {
         $this->app->bind(PdfGenerationService::class, fn () => new class extends PdfGenerationService
         {
@@ -349,7 +349,8 @@ class DocumentGenerationTest extends TestCase
         $document = $this->approuver($this->document());
 
         $this->assertTrue($this->acteur(Role::RhManager)->can('regenerer', $document));
-        $this->assertFalse($this->acteur(Role::RhManager, dansLePerimetre: false)->can('regenerer', $document));
+        $this->assertTrue($this->acteur(Role::RhManager, dansLePerimetre: false)->can('regenerer', $document));
+        $this->assertFalse($this->acteur(Role::RhSenior, dansLePerimetre: false)->can('regenerer', $document));
         $this->assertFalse($this->acteur(Role::RhSenior)->can('regenerer', $document));
     }
 }

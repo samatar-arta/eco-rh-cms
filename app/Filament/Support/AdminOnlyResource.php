@@ -2,11 +2,9 @@
 
 namespace App\Filament\Support;
 
-use App\Enums\Role;
-
 /**
  * Ressources d'administration (référentiels, types, modèles, niveaux de sanction) :
- * visibles et accessibles au seul ADMIN actif, quelle que soit la lecture ouverte par la policy.
+ * visibles et accessibles aux ADMIN et RH_MANAGER actifs, quelle que soit la lecture ouverte par la policy.
  */
 trait AdminOnlyResource
 {
@@ -16,7 +14,7 @@ trait AdminOnlyResource
 
         return $user !== null
             && $user->is_active
-            && $user->hasRole(Role::Admin)
+            && $user->estAdministrateur()
             && parent::canViewAny();
     }
 }

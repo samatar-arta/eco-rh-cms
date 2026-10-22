@@ -121,6 +121,15 @@ class User extends Authenticatable implements FilamentUser
         }
     }
 
+    /**
+     * Droits d'administration complets (ADMIN et RH_MANAGER) : administration, historique,
+     * journaux, tous les périmètres. Les rôles de paie restent régis par leurs propres policies.
+     */
+    public function estAdministrateur(): bool
+    {
+        return $this->is_active && $this->hasAnyRole(Role::Admin, Role::RhManager);
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         if (! $this->is_active) {
