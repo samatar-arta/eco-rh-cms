@@ -98,7 +98,7 @@ abstract class ModuleRecordPolicy
             return false;
         }
 
-        if (config('rh.workflow.separation_des_taches')
+        if (config('workflow.separation_des_taches')
             && ($workflow->cree_par === $user->getKey() || $workflow->valide_par === $user->getKey())) {
             return false;
         }

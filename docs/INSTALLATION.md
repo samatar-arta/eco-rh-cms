@@ -41,6 +41,6 @@ configurer un serveur SMTP réel puis tester avec un contact de confiance avant 
 
 ```bash
 php artisan test                 # doit être entièrement vert
-php artisan schedule:list        # workflow:retards (horaire), rh:appliquer-effets (00:10)
+php artisan schedule:list        # workflow:check-delays (horaire), rh:appliquer-effets (00:10)
 php artisan about                # APP_DEBUG doit être false en production
 ```

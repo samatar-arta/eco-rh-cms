@@ -15,7 +15,7 @@ class AdminOnlyResourcesTest extends TestCase
     /** Écrans d'administration issus de l'ancien panneau CMS, désormais sous /rh. */
     private const ADMIN_SCREENS = [
         'contrats', 'departements', 'journal-audit', 'niveaux-sanction', 'site-departements',
-        'sites-affectation', 'societes', 'users',
+        'sites-affectation', 'societes', 'users', 'workflow-histories',
         'model-conges', 'model-documents', 'model-evaluations', 'model-mutations', 'model-promotions', 'model-sanctions',
         'types-conges', 'types-documents', 'types-evaluations', 'types-mutations', 'types-promotions', 'types-sanctions',
     ];

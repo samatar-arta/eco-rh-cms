@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\RhModule;
+use App\Enums\Role;
 use App\Enums\WorkflowStatut;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -64,6 +66,50 @@ class Workflow extends Model
                 ->where('date_limite_validation', '<', now()))
                 ->orWhere(fn ($w) => $w->where('statut', WorkflowStatut::EnAttenteApprobation->value)
                     ->where('date_limite_approbation', '<', now()));
+        });
+    }
+
+    /**
+     * Workflows visibles par l'utilisateur. ADMIN : tous. Sinon, toujours limité au périmètre
+     * de l'employé concerné, puis par rôle : Manager = tous les statuts, Senior = dossiers en
+     * attente de validation, Officier/Junior = ses propres créations. Les rôles s'additionnent.
+     */
+    public function scopeVisibleTo(Builder $query, User $user): Builder
+    {
+        if (! $user->is_active) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if ($user->hasRole(Role::Admin)) {
+            return $query;
+        }
+
+        $classes = collect(RhModule::cases())->map(fn (RhModule $m) => $m->recordClass())->all();
+        $dansLePerimetre = fn (Builder $w) => $w->whereHasMorph(
+            'workflowable',
+            $classes,
+            fn (Builder $r) => $r->whereHas('employe', fn (Builder $e) => $e->visibleTo($user))
+        );
+
+        $branches = [];
+        if ($user->hasRole(Role::RhManager)) {
+            $branches[] = fn (Builder $b) => $dansLePerimetre($b);
+        }
+        if ($user->hasRole(Role::RhSenior)) {
+            $branches[] = fn (Builder $b) => $dansLePerimetre($b)->where('statut', WorkflowStatut::EnAttenteValidation->value);
+        }
+        if ($user->hasAnyRole(Role::RhOfficer, Role::RhJunior)) {
+            $branches[] = fn (Builder $b) => $dansLePerimetre($b)->where('cree_par', $user->getKey());
+        }
+
+        if ($branches === []) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->where(function (Builder $outer) use ($branches) {
+            foreach ($branches as $branch) {
+                $outer->orWhere($branch);
+            }
         });
     }
 

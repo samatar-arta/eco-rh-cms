@@ -8,9 +8,16 @@ use Illuminate\Console\Command;
 
 class DetectWorkflowOverdue extends Command
 {
-    protected $signature = 'workflow:retards';
+    protected $signature = 'workflow:check-delays';
 
     protected $description = "Liste les dossiers dont l'échéance de validation ou d'approbation est dépassée";
+
+    public function __construct()
+    {
+        parent::__construct();
+        // Ancien nom conservé pour les crons déjà installés.
+        $this->setAliases(['workflow:retards']);
+    }
 
     public function handle(NotificationService $notifications): int
     {

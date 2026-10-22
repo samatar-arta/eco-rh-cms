@@ -31,10 +31,4 @@ return [
         'max_total_mo' => (int) env('RH_PAYLIST_MAX_TOTAL_MO', 200),
     ],
 
-    'workflow' => [
-        'delai_validation_heures' => (int) env('RH_DELAI_VALIDATION_HEURES', 48),
-        'delai_approbation_heures' => (int) env('RH_DELAI_APPROBATION_HEURES', 48),
-        // Le créateur ne valide/approuve pas son dossier ; l'approbateur != validateur.
-        'separation_des_taches' => (bool) env('RH_SEPARATION_DES_TACHES', true),
-    ],
 ];

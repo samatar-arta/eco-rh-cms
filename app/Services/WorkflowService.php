@@ -80,7 +80,7 @@ class WorkflowService
                 $this->journaliser($workflow, $acteur, 'reprise', WorkflowStatut::Brouillon, $commentaire, $role);
             }
 
-            $limite = now()->addHours(config('rh.workflow.delai_validation_heures'));
+            $limite = now()->addHours(config('workflow.delai_validation_heures'));
 
             $this->transitionner($workflow, WorkflowStatut::DocumentSoumis);
             $workflow->date_soumission = now();
@@ -111,7 +111,7 @@ class WorkflowService
             $workflow->fill(['valide_par' => $acteur->getKey(), 'date_validation' => now()])->save();
             $this->journaliser($workflow, $acteur, 'validation', WorkflowStatut::Valide, $commentaire, $role);
 
-            $limite = now()->addHours(config('rh.workflow.delai_approbation_heures'));
+            $limite = now()->addHours(config('workflow.delai_approbation_heures'));
             $this->transitionner($workflow, WorkflowStatut::EnAttenteApprobation);
             $workflow->date_limite_approbation = $limite;
             $workflow->save();
@@ -269,7 +269,7 @@ class WorkflowService
 
     private function exigerSeparation(Workflow $workflow, User $acteur): void
     {
-        if (! config('rh.workflow.separation_des_taches')) {
+        if (! config('workflow.separation_des_taches')) {
             return;
         }
 

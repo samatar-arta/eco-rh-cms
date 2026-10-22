@@ -63,7 +63,7 @@ ne doit pas être exposé par le serveur web (pas de `php artisan storage:link` 
 
 | Besoin | Commande |
 |---|---|
-| Dossiers en retard | `php artisan workflow:retards` |
+| Dossiers en retard | `php artisan workflow:check-delays` |
 | Relancer un PDF | `php artisan dossiers:finaliser [module] [id]` (ou action « Relancer le PDF ») |
 | Appliquer les effets échus | `php artisan rh:appliquer-effets` (code retour ≠ 0 = conflit à traiter) |
 | Diagnostic des références | `php artisan references:next MODULE` (**consomme un numéro** : ne pas utiliser en production courante) |

@@ -8,5 +8,5 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('workflow:retards')->hourly();
+Schedule::command('workflow:check-delays')->hourly();
 Schedule::command('rh:appliquer-effets')->dailyAt('00:10');
