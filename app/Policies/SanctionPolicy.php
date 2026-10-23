@@ -22,7 +22,8 @@ class SanctionPolicy extends ModuleRecordPolicy
             return false;
         }
 
-        return $user->hasAnyRole(Role::RhManager, Role::RhSenior, Role::RhOfficer)
+        return $user->estAdministrateur()
+            || $user->hasAnyRole(Role::RhManager, Role::RhSenior, Role::RhOfficer)
             || $record->cree_par === $user->getKey();
     }
 }

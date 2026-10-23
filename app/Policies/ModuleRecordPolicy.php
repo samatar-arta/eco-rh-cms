@@ -25,7 +25,7 @@ abstract class ModuleRecordPolicy
 
     public function viewAny(User $user): bool
     {
-        return $user->is_active && $user->hasAnyRole(...$this->rolesLecture());
+        return $user->estAdministrateur() || ($user->is_active && $user->hasAnyRole(...$this->rolesLecture()));
     }
 
     public function view(User $user, Model $record): bool
@@ -35,7 +35,8 @@ abstract class ModuleRecordPolicy
 
     public function create(User $user): bool
     {
-        return $user->is_active && $user->hasAnyRole(...($this->modelClass)::rhModule()->creationRoles());
+        return $user->estAdministrateur()
+            || ($user->is_active && $user->hasAnyRole(...($this->modelClass)::rhModule()->creationRoles()));
     }
 
     public function update(User $user, Model $record): bool
@@ -77,7 +78,7 @@ abstract class ModuleRecordPolicy
     public function regenerer(User $user, Model $record): bool
     {
         return $user->is_active
-            && $user->hasRole(Role::RhManager)
+            && ($user->estAdministrateur() || $user->hasRole(Role::RhManager))
             && $record->reference !== null
             && $record->{$record->colonneFichierFinal()} === null
             && $record->workflow?->statut === WorkflowStatut::Approuve
@@ -94,7 +95,8 @@ abstract class ModuleRecordPolicy
     {
         $workflow = $record->workflow;
 
-        if (! $user->is_active || ! $user->hasRole($role) || $workflow?->statut !== $statut) {
+        // ADMIN agit comme RH_MANAGER (RH_MANAGER = ADMIN) à chaque étape.
+        if (! $user->is_active || ! ($user->estAdministrateur() || $user->hasRole($role)) || $workflow?->statut !== $statut) {
             return false;
         }
 

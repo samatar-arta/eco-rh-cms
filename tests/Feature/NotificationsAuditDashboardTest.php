@@ -194,7 +194,7 @@ class NotificationsAuditDashboardTest extends TestCase
         $this->assertNull($a['paylist']);
     }
 
-    public function test_paylist_figures_are_reserved_to_the_payroll_manager_and_admin_sees_employees_only(): void
+    public function test_paylist_figures_are_reserved_to_the_payroll_manager_and_admin_sees_employees_and_modules(): void
     {
         $gp = User::factory()->create();
         $gp->assignRole(Role::GestionnairePaie);
@@ -205,7 +205,8 @@ class NotificationsAuditDashboardTest extends TestCase
         $this->assertNotNull($service->pour($gp->fresh())['paylist']);
         $this->assertNull($service->pour($admin->fresh())['paylist']);
         $this->assertSame(1, $service->pour($admin->fresh())['employes']);
-        $this->assertSame([], $service->pour($admin->fresh())['modules']);
+        // ADMIN = RH_MANAGER : il consulte aussi les chiffres des modules RH (jamais ceux de Paylist).
+        $this->assertArrayHasKey('DOCUMENT', $service->pour($admin->fresh())['modules']);
     }
 
     public function test_dashboard_widgets_render(): void

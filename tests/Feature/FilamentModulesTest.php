@@ -300,6 +300,29 @@ class FilamentModulesTest extends TestCase
         $this->assertSame($officer->id, Employe::where('matricule', 'M-NEW-2')->value('cree_par'));
     }
 
+    public function test_admin_opens_documents_and_runs_the_whole_workflow(): void
+    {
+        $admin = User::factory()->create();
+        $admin->assignRole(Role::Admin);
+        $admin = $admin->fresh();
+        $document = $this->document();
+
+        $this->actingAs($admin)->get('/rh/documents')->assertOk();
+        Livewire::actingAs($admin)->test(ListDocuments::class)->assertCanSeeTableRecords([$document]);
+
+        $this->assertTrue($admin->can('soumettre', $document));
+        config(['workflow.separation_des_taches' => false]);
+        $workflows = app(WorkflowService::class);
+        $workflows->soumettre($document, $admin);
+        $this->assertTrue($admin->can('valider', $document->fresh()));
+        $workflows->valider($document->fresh(), $admin);
+        $this->assertTrue($admin->can('approuver', $document->fresh()));
+        $workflows->approuver($document->fresh(), $admin);
+
+        $this->assertSame(WorkflowStatut::Approuve, $document->fresh()->workflow->statut);
+        $this->assertNotNull($document->fresh()->reference);
+    }
+
     public function test_cms_admin_screens_are_admin_only(): void
     {
         Filament::setCurrentPanel('rh');
