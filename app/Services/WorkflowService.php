@@ -14,6 +14,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -278,6 +279,11 @@ class WorkflowService
     private function exigerSeparation(Workflow $workflow, User $acteur): void
     {
         if (! config('workflow.separation_des_taches')) {
+            Log::info('TEST MODE: séparation des tâches désactivée (RH_SEPARATION_DES_TACHES=false)', [
+                'workflow_id' => $workflow->getKey(),
+                'user_id' => $acteur->getKey(),
+            ]);
+
             return;
         }
 

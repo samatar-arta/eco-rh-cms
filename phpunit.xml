@@ -24,6 +24,7 @@
     </source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <env name="RH_SEPARATION_DES_TACHES" value="true"/>
         <env name="APP_KEY" value="base64:dGVzdGluZy1rZXktZm9yLXBocHVuaXQtb25seS0zMmI="/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
