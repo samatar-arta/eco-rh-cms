@@ -61,6 +61,17 @@ class TemplateRendererService
             'mutation.date_effet' => $rec('date_effet'),
 
             'date_du_jour' => fn () => now(),
+
+            // Alias en majuscules utilisés par les modèles DLS.
+            'REFERENCE' => $rec('reference'),
+            'DATE_PRODUCTION' => fn (?Model $r) => $r?->date_production ?? now(),
+            'NOM_COMPLET' => $emp('name'),
+            'MATRICULE' => $emp('matricule'),
+            'DATE_EMBAUCHE' => $emp('date_embauche'),
+            'ANNEE_EMBAUCHE' => fn ($r, ?Employe $e) => $e?->date_embauche?->format('Y'),
+            'FONCTION' => $emp('fonction'),
+            'CODE' => fn ($r, ?Employe $e) => $e?->societe?->code,
+            'DEPARTEMENT' => fn ($r, ?Employe $e) => $e?->departement?->name,
         ];
     }
 

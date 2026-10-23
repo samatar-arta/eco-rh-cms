@@ -28,6 +28,7 @@ class WorkflowService
     public function __construct(
         private ReferenceService $references,
         private DocumentRenewalRule $renouvellement,
+        private DocumentContratRule $contratRule,
         private EffetsApprobationService $effets,
         private AuditService $audit,
         private NotificationService $notifier,
@@ -63,6 +64,7 @@ class WorkflowService
         $roles = $record::rhModule()->creationRoles();
 
         if ($record instanceof Document) {
+            $this->contratRule->verifier($record);
             $this->renouvellement->verifier($record);
         }
 
@@ -169,6 +171,7 @@ class WorkflowService
             $this->exigerSeparation($workflow, $acteur);
 
             if ($record instanceof Document) {
+                $this->contratRule->verifier($record);
                 $this->renouvellement->verifier($record);
                 $record->date_production ??= today();
                 $record->save();
