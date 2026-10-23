@@ -260,6 +260,11 @@ class WorkflowService
             ? collect($rolesAutorises)->first(fn (Role $r) => $acteur->hasRole($r))
             : null;
 
+        // ADMIN agit comme RH_MANAGER (RH_MANAGER = ADMIN) ; la séparation des tâches reste appliquée ailleurs.
+        if ($role === null && $acteur->estAdministrateur() && $rolesAutorises !== []) {
+            $role = in_array(Role::RhManager, $rolesAutorises, true) ? Role::RhManager : $rolesAutorises[0];
+        }
+
         if ($role === null || ! $record->employe?->isInScopeOf($acteur)) {
             throw new AuthorizationException("Vous n'êtes pas autorisé à effectuer cette action sur ce dossier.");
         }

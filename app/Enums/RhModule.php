@@ -61,8 +61,8 @@ enum RhModule: string
     public function creationRoles(): array
     {
         return match ($this) {
-            self::Evaluation, self::Promotion, self::Mutation => [Role::RhManager, Role::RhSenior],
-            default => Role::rh(),
+            self::Evaluation, self::Promotion, self::Mutation => [Role::Admin, Role::RhManager, Role::RhSenior],
+            default => [Role::Admin, ...Role::rh()],
         };
     }
 }
