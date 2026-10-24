@@ -64,7 +64,7 @@ class DocumentGenerationService
 
         $html = view('pdf.dossier', [
             'reference' => $record->reference,
-            'contenu' => $record->contenu_genere,
+            'contenu' => $this->apposerSignatureImage($record->contenu_genere),
             'signataire' => $approbateur?->name ?? 'Inconnu',
             'roleSignataire' => Role::RhManager->label(),
             'dateApprobation' => $workflow->date_approbation?->timezone(config('app.timezone'))->format('d/m/Y H:i'),
@@ -95,5 +95,21 @@ class DocumentGenerationService
         $this->workflow->journaliser($workflow, null, 'archivage', WorkflowStatut::Approuve, $chemin);
 
         return $chemin;
+    }
+
+    /**
+     * Remplace le marqueur [[SIGNATURE_DARH]] par l'image de signature, intégrée en
+     * base64 (aucun chargement de fichier par dompdf). Appliqué au rendu du PDF
+     * seulement : le contenu figé et son empreinte restent inchangés. Sans fichier,
+     * le marqueur est retiré.
+     */
+    private function apposerSignatureImage(string $contenu): string
+    {
+        $chemin = storage_path('app/signatures/darh.png');
+        $image = is_file($chemin)
+            ? '<img src="data:image/png;base64,'.base64_encode(file_get_contents($chemin)).'" style="height:70px; width:auto">'
+            : '';
+
+        return str_replace('[[SIGNATURE_DARH]]', $image, $contenu);
     }
 }
