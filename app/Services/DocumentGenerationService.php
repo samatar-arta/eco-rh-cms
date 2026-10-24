@@ -107,7 +107,7 @@ class DocumentGenerationService
     {
         $chemin = storage_path('app/signatures/darh.png');
         $image = is_file($chemin)
-            ? '<img src="data:image/png;base64,'.base64_encode(file_get_contents($chemin)).'" style="height:70px; width:auto">'
+            ? '<img src="data:image/png;base64,'.base64_encode(file_get_contents($chemin)).'" style="height:120px; width:auto; margin-top:5px">'
             : '';
 
         return str_replace('[[SIGNATURE_DARH]]', $image, $contenu);
