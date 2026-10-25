@@ -39,11 +39,13 @@ class Conge extends Model
         'solde_avant',
         'date_decision',
         'commentaire_decision',
+        'donnees_saisies',
     ];
 
     protected function casts(): array
     {
         return [
+            'donnees_saisies' => 'array',
             'date_debut' => 'date',
             'date_fin' => 'date',
             'date_decision' => 'date',

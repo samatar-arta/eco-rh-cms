@@ -72,7 +72,48 @@ class TemplateRendererService
             'FONCTION' => $emp('fonction'),
             'CODE' => fn ($r, ?Employe $e) => $e?->societe?->code,
             'DEPARTEMENT' => fn ($r, ?Employe $e) => $e?->departement?->name,
+            'POSTE' => $emp('fonction'),
+            'DIRECTION' => fn ($r, ?Employe $e) => $e?->departement?->name,
+            'SOCIETE' => fn ($r, ?Employe $e) => $e?->societe?->name,
+            'DUREE' => fn (?Model $r, ?Employe $e) => $this->duree($r, $e),
+            'DATE_SORTIE' => $emp('date_sortie'),
+            'DESCRIPTION' => $rec('description'),
+            'DATE_DEBUT' => $rec('date_debut'),
+            'DATE_FIN' => $rec('date_fin'),
+            'DATE_EFFET' => $rec('date_effet'),
+            'MOTIF' => $rec('motif'),
+            'NIVEAU_SANCTION' => fn (?Model $r) => $r?->niveau?->name,
+            'DATE_SANCTION' => $rec('date_sanction'),
+            'DATE_EVALUATION' => $rec('date_evaluation'),
+            'PERIODE_DEBUT' => $rec('periode_debut'),
+            'PERIODE_FIN' => $rec('periode_fin'),
+            'NOTE' => $rec('note'),
+            'APPRECIATION' => $rec('appreciation'),
+            'ANCIENNE_FONCTION' => $rec('ancienne_fonction'),
+            'NOUVELLE_FONCTION' => $rec('nouvelle_fonction'),
+            'ANCIEN_GRADE' => $rec('ancien_grade'),
+            'NOUVEAU_GRADE' => $rec('nouveau_grade'),
+            'ANCIEN_SITE' => fn (?Model $r) => $r?->ancienSite?->name,
+            'NOUVEAU_SITE' => fn (?Model $r) => $r?->nouveauSite?->name,
+            'ANCIEN_DEPARTEMENT' => fn (?Model $r) => $r?->ancienDepartement?->name,
+            'NOUVEAU_DEPARTEMENT' => fn (?Model $r) => $r?->nouveauDepartement?->name,
+            'ANCIENNE_SOCIETE' => fn (?Model $r) => $r?->ancienneSociete?->name,
+            'NOUVELLE_SOCIETE' => fn (?Model $r) => $r?->nouvelleSociete?->name,
+            'CODE.SOCIETE' => fn ($r, ?Employe $e) => $e?->societe?->code,
+            'DEPARTEMENT.NAME' => fn ($r, ?Employe $e) => $e?->departement?->name,
+            'NUM_CNSS' => $emp('num_cnss'),
+            'CATEGORIE' => $emp('categorie'),
+            'ANCIENNETE' => fn ($r, ?Employe $e) => $this->anciennete($e)[0] ?? null,
+            'ANCIENNETE_MOIS' => fn ($r, ?Employe $e) => $this->anciennete($e)[1] ?? null,
+            'NBRE_JOURS' => $rec('nbre_jours'),
+            'SANCTION_PRECEDENTE' => fn (?Model $r) => $this->sanctionPrecedente($r),
         ];
+
+        // Valeurs saisies à la main (liste blanche : voir ChampsSaisieService).
+        $saisies = app(ChampsSaisieService::class);
+        foreach (array_keys(ChampsSaisieService::CHAMPS) as $nom) {
+            $this->variables[$nom] = fn (?Model $r) => $saisies->formater($nom, $r?->donnees_saisies[$nom] ?? null);
+        }
     }
 
     /** @return list<string> */
@@ -125,6 +166,47 @@ class TemplateRendererService
         ]);
 
         return $this->rendre($template, $record, $employe);
+    }
+
+    /** Durée du congé en jours, sinon ancienneté de l'employé dans la société. */
+    private function duree(?Model $record, ?Employe $employe): ?string
+    {
+        if ($record?->nbre_jours !== null) {
+            return $record->nbre_jours.' jour(s)';
+        }
+
+        if ($employe?->date_embauche === null) {
+            return null;
+        }
+
+        $fin = $employe->date_sortie ?? now();
+        $debut = $employe->date_embauche;
+        $ans = (int) $debut->diffInYears($fin, true);
+        $mois = (int) $debut->copy()->addYears($ans)->diffInMonths($fin, true);
+
+        return trim(($ans > 0 ? $ans.' an(s)' : '').($mois > 0 ? ' '.$mois.' mois' : '')) ?: 'moins d\'un mois';
+    }
+
+    /** @return array{int, int}|null [années, mois] de service */
+    private function anciennete(?Employe $employe): ?array
+    {
+        if ($employe?->date_embauche === null) {
+            return null;
+        }
+
+        $fin = $employe->date_sortie ?? now();
+        $ans = (int) $employe->date_embauche->diffInYears($fin, true);
+
+        return [$ans, (int) $employe->date_embauche->copy()->addYears($ans)->diffInMonths($fin, true)];
+    }
+
+    private function sanctionPrecedente(?Model $record): string
+    {
+        $precedente = $record?->sanctionPrecedente;
+
+        return $precedente === null
+            ? 'Néant'
+            : trim(($precedente->niveau?->name ?? 'Sanction').' du '.$precedente->date_sanction?->format('d/m/Y'));
     }
 
     private function formater(mixed $valeur): string

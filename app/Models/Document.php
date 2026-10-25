@@ -32,11 +32,13 @@ class Document extends Model
         'contenu_genere',
         'fichier_path',
         'commentaire',
+        'donnees_saisies',
     ];
 
     protected function casts(): array
     {
         return [
+            'donnees_saisies' => 'array',
             'date_production' => 'date',
             'model_version' => 'integer',
         ];

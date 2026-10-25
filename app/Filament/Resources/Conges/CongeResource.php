@@ -69,6 +69,7 @@ class CongeResource extends ModuleResource
                 static::typeSelect('type_conge_id', 'model_conge_id', TypeConge::class, ModelConge::class),
                 static::modelSelect('type_conge_id', 'model_conge_id', ModelConge::class),
                 static::modelPreview('model_conge_id', ModelConge::class)->columnSpanFull(),
+                static::saisiesManuelles('model_conge_id', ModelConge::class),
                 DatePicker::make('date_debut')->label('Début')->required()->live(),
                 DatePicker::make('date_fin')->label('Fin')->required()->live()->afterOrEqual('date_debut'),
                 Textarea::make('motif')->label('Motif')->columnSpanFull(),

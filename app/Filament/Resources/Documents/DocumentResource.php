@@ -44,6 +44,7 @@ class DocumentResource extends ModuleResource
                 static::typeSelect('type_document_id', 'model_document_id', TypeDocument::class, ModelDocument::class),
                 static::modelSelect('type_document_id', 'model_document_id', ModelDocument::class),
                 static::modelPreview('model_document_id', ModelDocument::class)->columnSpanFull(),
+                static::saisiesManuelles('model_document_id', ModelDocument::class),
                 DatePicker::make('date_production')->label('Date de production'),
                 Textarea::make('commentaire')->label('Commentaire')->columnSpanFull(),
             ]),

@@ -60,6 +60,7 @@ class SanctionResource extends ModuleResource
                 static::typeSelect('type_sanction_id', 'model_sanction_id', TypeSanction::class, ModelSanction::class),
                 static::modelSelect('type_sanction_id', 'model_sanction_id', ModelSanction::class),
                 static::modelPreview('model_sanction_id', ModelSanction::class)->columnSpanFull(),
+                static::saisiesManuelles('model_sanction_id', ModelSanction::class),
                 DatePicker::make('date_sanction')->label('Date de la sanction')->required(),
                 Select::make('niveau_sanction_id')->label('Niveau appliqué')
                     ->options(fn () => NiveauSanction::where('is_active', true)->orderBy('ordre')->pluck('name', 'id')),

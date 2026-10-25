@@ -35,11 +35,13 @@ class Sanction extends Model
         'contenu_genere',
         'model_version',
         'fichier_path',
+        'donnees_saisies',
     ];
 
     protected function casts(): array
     {
         return [
+            'donnees_saisies' => 'array',
             'date_sanction' => 'date',
         ];
     }

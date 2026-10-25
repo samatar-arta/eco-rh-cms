@@ -4,14 +4,19 @@ namespace App\Filament\Support;
 
 use App\Enums\WorkflowStatut;
 use App\Models\Employe;
+use App\Services\ChampsSaisieService;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\TimePicker;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Text;
 use Filament\Schemas\Components\Utilities\Get;
@@ -141,6 +146,32 @@ abstract class ModuleResource extends Resource
             return $modele
                 ? "Modèle « {$modele->titre} » v{$modele->version} — aperçu : ".str(strip_tags($modele->contenu))->squish()->limit(400)
                 : 'Aucun modèle sélectionné.';
+        });
+    }
+
+    /**
+     * Champs à saisir à la main, déduits du modèle choisi (variables de
+     * ChampsSaisieService::CHAMPS utilisées dans son contenu). Obligatoires :
+     * le contrôle serveur est refait à la soumission, à l'approbation et au PDF.
+     *
+     * @param  class-string<Model>  $templateClass
+     */
+    public static function saisiesManuelles(string $templateKey, string $templateClass): Grid
+    {
+        return Grid::make(2)->columnSpanFull()->schema(function (Get $get) use ($templateKey, $templateClass) {
+            $modele = $templateClass::find($get($templateKey));
+
+            return array_map(function (string $nom) {
+                [$libelle, $type] = ChampsSaisieService::CHAMPS[$nom];
+                $champ = "donnees_saisies.{$nom}";
+
+                return match ($type) {
+                    'number' => TextInput::make($champ)->numeric()->minValue(0)->label($libelle)->required(),
+                    'date' => DatePicker::make($champ)->label($libelle)->required(),
+                    'time' => TimePicker::make($champ)->label($libelle)->required(),
+                    default => TextInput::make($champ)->label($libelle)->maxLength(255)->required(),
+                };
+            }, app(ChampsSaisieService::class)->requis($modele?->contenu));
         });
     }
 

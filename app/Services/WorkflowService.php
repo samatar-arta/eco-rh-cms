@@ -29,6 +29,7 @@ class WorkflowService
     public function __construct(
         private ReferenceService $references,
         private DocumentRenewalRule $renouvellement,
+        private ChampsSaisieService $saisies,
         private DocumentContratRule $contratRule,
         private EffetsApprobationService $effets,
         private AuditService $audit,
@@ -69,6 +70,7 @@ class WorkflowService
             $this->renouvellement->verifier($record);
         }
 
+        $this->saisies->verifier($record);
         $this->effets->verifierSoumission($record);
 
         $workflow = DB::transaction(function () use ($record, $acteur, $commentaire, $roles) {
@@ -170,6 +172,7 @@ class WorkflowService
             $this->exigerStatut($workflow, WorkflowStatut::EnAttenteApprobation);
             $role = $this->exigerRole($acteur, [Role::RhManager], $record);
             $this->exigerSeparation($workflow, $acteur);
+            $this->saisies->verifier($record);
 
             if ($record instanceof Document) {
                 $this->contratRule->verifier($record);

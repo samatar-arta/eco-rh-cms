@@ -22,7 +22,7 @@ trait HasFrozenContent
                 return;
             }
 
-            $figes = ['contenu_genere', 'model_version', 'matricule', $record->typeKey(), $record->templateKey()];
+            $figes = ['contenu_genere', 'model_version', 'donnees_saisies', 'matricule', $record->typeKey(), $record->templateKey()];
             if ($record->isDirty($figes)) {
                 throw new LogicException('Un document finalisé est immuable.');
             }

@@ -24,6 +24,7 @@ class DocumentGenerationService
         private TemplateRendererService $renderer,
         private PdfGenerationService $pdf,
         private WorkflowService $workflow,
+        private ChampsSaisieService $saisies,
     ) {}
 
     /** @return string chemin du PDF archivé */
@@ -47,6 +48,11 @@ class DocumentGenerationService
 
         if ($record->{$colonne} !== null && Storage::disk(config('rh.pdf.disk'))->exists($record->{$colonne})) {
             return $record->{$colonne};
+        }
+
+        // Un champ saisi à la main ne doit jamais sortir vide dans un document officiel.
+        if ($record->contenu_genere === null) {
+            $this->saisies->verifier($record);
         }
 
         $approbateur = $workflow->approbateur;
